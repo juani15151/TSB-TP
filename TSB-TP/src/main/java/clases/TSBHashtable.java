@@ -161,6 +161,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     private void setLoadFactor(float factor){
         if (factor <= 0 || factor > 0.5f) {
             this.load_factor = 0.5f;
+        } else {
+            this.load_factor = factor;
         }
     }
     
