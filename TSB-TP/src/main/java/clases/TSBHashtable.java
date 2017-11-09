@@ -207,24 +207,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             throw new NullPointerException("get(): parámetro null");
         }
         K key = (K) object; // throws ClassCastException si object no es un Key.
-
-        Iterator<Integer> index = getIndexIterator(h(key.hashCode()));
-        Entry<K, V> entry;
-
-        while (index.hasNext()) {
-            entry = table[index.next()];
-            if (entry == null) {
-                return null;
-            }
-            if (entry.estaOcupado()) {
-                if (entry.getKey() == key) {
-                    return entry.getValue();
-                }
-            }
-            // si el estado es tumba continua.
-        }
-        // se recorrieron todas las casillas y no esta el objeto.
-        return null;
+        Entry<K, V> e = getEntry(key);
+        return e != null ? e.getValue() : null;
     }
 
     /**
