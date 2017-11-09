@@ -111,9 +111,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @param t el Map a partir del cual se creará la tabla.
      */
     public TSBHashtable(Map<? extends K, ? extends V> t) {
-        // TODO: Modificar para crear las entradas inicializadas y no recorrer
-        //       2 veces la tabla. (Al crear entry y al ponerles valor).
-        this(13, 0.5f);
+        // Crea un arreglo con el tamaño necesario para contener el mapa y poder
+        // agregar nuevos elementos si hacer un rehash en el primer intento.
+        this(t.size() * 2 + 1, 0.5f);
         this.putAll(t);
     }
     
@@ -127,8 +127,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     private boolean esPrimo(int num){
         if(num == 1) return false;
         if(num % 2 == 0) return false;
-        
-        for(int i = 3; i < Math.sqrt(num); i += 2){
+        int raiz = (int) Math.sqrt(num) + 1; // Se suma 1 por el redondeo.
+        for(int i = 3; i < raiz; i += 2){
             if(num % i == 0) return false;
         }
         return true;
