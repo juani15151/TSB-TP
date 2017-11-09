@@ -89,24 +89,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @param load_factor el factor de carga de la tabla.
      */
     public TSBHashtable(int initial_capacity, float load_factor) {
-        if (initial_capacity <= 0) {
-            initial_capacity = DEFAULT_CAPACITY;
-        } else if (initial_capacity > TSBHashtable.MAX_CAPACITY) {
-            initial_capacity = TSBHashtable.MAX_CAPACITY;
-        } else {
-            /* 
-             * La capacidad inicial se aumenta en funcion del load_factor de 
-             * forma que la tabla en su maxima capacidad pueda contener la 
-             * cantidad de elementos pasada por parametro.
-             */
-            initial_capacity = (int) ((float) initial_capacity / load_factor);
-            initial_capacity = proximoPrimo(initial_capacity);
-        }
-
-        // Nota: La lista empieza con null en lugar de Entry's vacios.
-        this.table = new Entry[initial_capacity];
-        this.initial_capacity = initial_capacity;
         setLoadFactor(load_factor);
+        setInitialCapacity(initial_capacity); // Debe estar despues de setLoadFactor();
+        this.table = new Entry[initial_capacity];      
         this.size = 0;
         this.modCount = 0;
     }
@@ -121,6 +106,33 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         // agregar nuevos elementos si hacer un rehash en el primer intento.
         this(t.size() * 2 + 1, 0.5f);
         this.putAll(t);
+    }
+    
+    private void setLoadFactor(float factor) {
+        load_factor = factor < 0 || factor > 0.5f ? DEFAULT_LOAD_FACTOR : factor;
+    }
+    
+    /**
+     * Define el tamaño del arreglo minimo para almacenar la capacidad 
+     * solicitada. 
+     * Antes de invocarlo debe estar definido load_factor.
+     * @param initial_capacity 
+     */
+    private void setInitialCapacity(int initial_capacity) {
+        if (initial_capacity <= 0) {
+            initial_capacity = DEFAULT_CAPACITY;
+        } else if (initial_capacity > TSBHashtable.MAX_CAPACITY) {
+            initial_capacity = TSBHashtable.MAX_CAPACITY;
+        } else {
+            /* 
+             * La capacidad inicial se aumenta en funcion del load_factor de 
+             * forma que la tabla en su maxima capacidad pueda contener la 
+             * cantidad de elementos pasada por parametro.
+             */
+            initial_capacity = (int) ((float) initial_capacity / load_factor);
+            initial_capacity = proximoPrimo(initial_capacity);
+        }
+        this.initial_capacity = initial_capacity;
     }
 
     private int proximoPrimo(int initial) {
@@ -138,18 +150,14 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             return false;
         }
         // Busqueda de divisores.
-        int raiz = (int) Math.sqrt(num) + 1; // Se suma 1 por el redondeo.
+        final int raiz = (int) Math.sqrt(num) + 1; // Se suma 1 por el redondeo.
         for (int i = 3; i < raiz; i += 2) {
             if (num % i == 0) {
                 return false;
             }
         }
         return true;
-    }
-
-    private void setLoadFactor(float factor) {
-        load_factor = factor < 0 || factor > 0.5f ? DEFAULT_LOAD_FACTOR : factor;
-    }
+    }   
 
     // ***** Implementación de métodos especificados por Map. *****
     /**
