@@ -503,9 +503,10 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         cad.append("; count:").append(this.count);
         cad.append("; {");
 
-        for (Entry<K, V> entrada : table) {
-            if (entrada != null) {
-                cad.append(entrada.toString()).append(" ");
+        // Recorrido lineal de la tabla
+        for (Entry<K, V> entry : table) {
+            if (entry != null && entry.estaOcupado()) {
+                cad.append(entry.toString()).append(" ");
             }
         }
         cad.append('}');
