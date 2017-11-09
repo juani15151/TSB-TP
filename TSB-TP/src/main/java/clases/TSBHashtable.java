@@ -254,7 +254,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         while (it.hasNext()) {
             i = it.next();
             if (table[i] == null) {
-                table[i] = new Entry(key, value);               
+                table[i] = new Entry(key, value);
                 break;
             }
             if (table[i].key == key) {
@@ -263,7 +263,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
                 break;
             }
         }
-        if(old == null) count++;
+        if (old == null) {
+            count++;
+        }
         modCount++;
         return old;
     }
@@ -295,7 +297,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
                 if (table[i].estaOcupado()) {
                     old = table[i].matar();
                     count--;
-                    modCount++;                   
+                    modCount++;
                 }
                 // Si el entry es una tumba, el objeto ya fue borrado.
                 break;
@@ -413,10 +415,10 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
     //************************ Redefinición de métodos heredados desde Object.
     /**
-     * Retorna una copia superficial de la tabla. Las listas de desborde o
-     * buckets que conforman la tabla se clonan ellas mismas, pero no se clonan
-     * los objetos que esas listas contienen: en cada bucket de la tabla se
-     * almacenan las direcciones de los mismos objetos que contiene la original.
+     * Retorna una copia superficial de la tabla. Las entradas que conforman la
+     * tabla se clonan, pero no se clonan los objetos que estas contienen: en
+     * cada entrada de la tabla se almacenan las direcciones de los mismos
+     * objetos que contiene la original.
      *
      * @return una copia superficial de la tabla.
      * @throws java.lang.CloneNotSupportedException si la clase no implementa la
@@ -448,20 +450,18 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             return false;
         }
 
-        Map<K, V> t = (Map<K, V>) obj;
-        if (t.size() != this.size()) {
+        Map<K, V> other = (Map<K, V>) obj;
+        if (other.size() != this.size()) {
             return false;
         }
 
         try {
             Iterator<Map.Entry<K, V>> i = this.entrySet().iterator();
             while (i.hasNext()) {
-                Map.Entry<K, V> e = i.next();
-                K key = e.getKey();
-                V value = e.getValue();
-                if (t.get(key) == null) {
-                    return false;
-                } else if (!value.equals(t.get(key))) {
+                Map.Entry<K, V> thisEntry = i.next();
+                V otherValue = other.get(thisEntry.getKey());
+                if (otherValue == null
+                        || !thisEntry.getValue().equals(otherValue)) {
                     return false;
                 }
             }
@@ -857,7 +857,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         @Override
         /**
          * Cambia el valor almacenado y pasa a estado ocupado.
-         * 
+         *
          * @returns el valor almacenado.
          */
         public V setValue(V value) {
