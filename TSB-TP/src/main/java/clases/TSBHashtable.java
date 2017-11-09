@@ -518,7 +518,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * Determina si alguna clave de la tabla está asociada al objeto value que
      * entra como parámetro. Equivale a containsValue().
      *
-     * @param value el objeto a buscar en la tabla.
+     * @param obj el objeto a buscar en la tabla.
      * @return true si alguna clave está asociada efectivamente a ese value.
      */
     public boolean contains(Object obj) {
@@ -533,9 +533,12 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             return false;
         }
 
+        // Recorrido lineal de las entradas porque se desconoce la clave.
         for (Entry<K, V> entry : this.table) {
-            if (entry.status == EntryStatus.OCUPADO
+            if (entry != null
+                    && entry.estaOcupado()
                     && entry.getValue() == value) {
+
                 return true;
             }
         }
