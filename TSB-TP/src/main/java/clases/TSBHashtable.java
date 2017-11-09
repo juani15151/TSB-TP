@@ -544,8 +544,15 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         }
         return false;
     }
-
-    public Entry<K, V> getEntry(K key) {
+    
+    /**
+     * Retorna la entrada de la clave indicada o null si no existe.
+     * Filtra las entradas muertas.
+     * 
+     * @param key
+     * @return la entrada buscada o null si no existe.
+     */
+    private Entry<K, V> getEntry(K key) {
         if (key == null) {
             throw new NullPointerException("getEntry(): parámetro null");
         }
@@ -555,16 +562,13 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         while (index.hasNext()) {
             entry = table[index.next()];
-            EntryStatus s = entry.getStatus();
-            if (s == EntryStatus.DISPONIBLE) {
+            if (entry == null) {
                 return null;
             }
-            if (s == EntryStatus.OCUPADO) {
-                if (entry.getKey() == key) {
-                    return entry;
-                }
+            if(entry.getKey() == key){
+                // Si la entrada es tumba y tiene esta clave retorna null.
+                return entry.estaOcupado() ? entry : null;
             }
-            // si el estado es tumba continua.
         }
         // se recorrieron todas las casillas y no esta el objeto.
         return null;
