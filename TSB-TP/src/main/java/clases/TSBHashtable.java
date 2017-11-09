@@ -116,33 +116,36 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         this(t.size() * 2 + 1, 0.5f);
         this.putAll(t);
     }
-    
-    private int proximoPrimo(int initial){
-        for(int i = initial; i < Integer.MAX_VALUE; i++){
-            if(esPrimo(i)) return i;
+
+    private int proximoPrimo(int initial) {
+        for (int i = initial; i < Integer.MAX_VALUE; i++) {
+            if (esPrimo(i)) {
+                return i;
+            }
         }
         throw new Error("No se encuentra un numero primo más grande.");
     }
-    
-    private boolean esPrimo(int num){
-        if(num == 1) return false;
-        if(num % 2 == 0) return false;
+
+    private boolean esPrimo(int num) {
+        // Si es 1 o par
+        if (num == 1 || num % 2 == 0) {
+            return false;
+        }
+        // Busqueda de divisores.
         int raiz = (int) Math.sqrt(num) + 1; // Se suma 1 por el redondeo.
-        for(int i = 3; i < raiz; i += 2){
-            if(num % i == 0) return false;
+        for (int i = 3; i < raiz; i += 2) {
+            if (num % i == 0) {
+                return false;
+            }
         }
         return true;
     }
-    
-    private void setLoadFactor(float factor){
-        if (factor <= 0 || factor > 0.5f) {
-            this.load_factor = 0.5f;
-        } else {
-            this.load_factor = factor;
-        }
+
+    private void setLoadFactor(float factor) {
+        load_factor = factor < 0 || factor > 0.5f ? 0.5f : factor;
     }
-    
-    //************************ Implementación de métodos especificados por Map.
+
+    // ***** Implementación de métodos especificados por Map. *****
     /**
      * Retorna la cantidad de elementos contenidos en la tabla.
      *
@@ -199,26 +202,31 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * tabla.
      */
     @Override
-    public V get(Object key) {
-        if (key == null) {
+    public V get(Object object) {
+        if (object == null) {
             throw new NullPointerException("get(): parámetro null");
         }
+        K key = (K) object; // throws ClassCastException si object no es un Key.
 
-        Iterator<Integer> index = getIndexIterator(h(key.hashCode()));        
-        Entry<K, V> entry;      
+        Iterator<Integer> index = getIndexIterator(h(key.hashCode()));
+        Entry<K, V> entry;
 
-        while(index.hasNext()){
+        while (index.hasNext()) {
             entry = table[index.next()];
-            if(entry == null) return null;
-            if(entry.estaOcupado()){
-                if(entry.getKey() == key) return entry.getValue();
+            if (entry == null) {
+                return null;
+            }
+            if (entry.estaOcupado()) {
+                if (entry.getKey() == key) {
+                    return entry.getValue();
+                }
             }
             // si el estado es tumba continua.
         }
         // se recorrieron todas las casillas y no esta el objeto.
-        return null;        
+        return null;
     }
-    
+
     /**
      * Asocia el valor (value) especificado, con la clave (key) especificada en
      * esta tabla. Si la tabla contenía previamente un valor asociado para la
@@ -237,36 +245,26 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         if (key == null || value == null) {
             throw new NullPointerException("put(): parámetro null");
         }
-        if ((this.count + 1) / 2 >= load_factor) {
+        if ((count + 1) / table.length >= load_factor) {
             rehash();
         }
         V old = null;
         Iterator<Integer> it = getIndexIterator(h(key.hashCode()));
         int i;
-        while(it.hasNext()){
+        while (it.hasNext()) {
             i = it.next();
-            if(table[i] == null){                
-                table[i] = new Entry(key, value);
-                count++;
-                modCount++;
+            if (table[i] == null) {
+                table[i] = new Entry(key, value);               
                 break;
             }
-            if(table[i].key == key){
-                if(table[i].estaOcupado()){
-                    old = table[i].value;
-                    table[i].setValue(value);
-                    count++;
-                    modCount++;
-                    break;
-
-                } else { // EntryStatus.tumba
-                    table[i] = new Entry(key, value);
-                    count++;
-                    modCount++;
-                    break;
-                }    
-            }            
-        }     
+            if (table[i].key == key) {
+                // Si esta ocupado retorna el objeto, si es tumba retorna null.
+                old = table[i].setValue(value);
+                break;
+            }
+        }
+        if(old == null) count++;
+        modCount++;
         return old;
     }
 
@@ -287,14 +285,14 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         V old = null;
         Iterator<Integer> it = getIndexIterator(h(key.hashCode()));
         int i;
-        while(it.hasNext()){
+        while (it.hasNext()) {
             i = it.next();
-            if(table[i] == null){                
+            if (table[i] == null) {
                 // El objeto no esta en la tabla.
                 break;
             }
-            if(table[i].key == key){
-                if(table[i].estaOcupado()){
+            if (table[i].key == key) {
+                if (table[i].estaOcupado()) {
                     old = table[i].value;
                     table[i].matar();
                     count--;
@@ -304,10 +302,10 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
                 } else { // EntryStatus.tumba
                     // El objeto ya fue borrado.
                     break;
-                }    
+                }
             }
         }
-        
+
         return old;
     }
 
@@ -333,7 +331,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     @Override
     public void clear() {
-        this.table = new Entry[initial_capacity];        
+        this.table = new Entry[initial_capacity];
         this.count = 0;
         this.modCount++;
     }
@@ -432,9 +430,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     protected Object clone() throws CloneNotSupportedException {
         TSBHashtable<K, V> copy = (TSBHashtable<K, V>) super.clone();
         copy.table = new Entry[table.length];
-        for (int i = 0; i < table.length; i++) {            
+        for (int i = 0; i < table.length; i++) {
             copy.table[i] = (Entry<K, V>) table[i].clone();
-        }        
+        }
         copy.keySet = null;
         copy.entrySet = null;
         copy.values = null;
@@ -508,9 +506,11 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         cad.append("initial_cap:").append(initial_capacity);
         cad.append("; count:").append(this.count);
         cad.append("; {");
-        
+
         for (Entry<K, V> entrada : table) {
-            if(entrada != null) cad.append(entrada.toString()).append(" ");
+            if (entrada != null) {
+                cad.append(entrada.toString()).append(" ");
+            }
         }
         cad.append('}');
         return cad.toString();
@@ -528,42 +528,46 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         if (obj == null) {
             return false;
         }
-        
+
         V value;
         try {
             value = (V) obj;
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
             return false;
         }
-        
-        for(Entry<K,V> entry : this.table){
-            if(entry.status == EntryStatus.OCUPADO &&
-                    entry.getValue() == value){
+
+        for (Entry<K, V> entry : this.table) {
+            if (entry.status == EntryStatus.OCUPADO
+                    && entry.getValue() == value) {
                 return true;
             }
         }
         return false;
     }
-    
+
     public Entry<K, V> getEntry(K key) {
         if (key == null) {
             throw new NullPointerException("getEntry(): parámetro null");
         }
 
-        Iterator<Integer> index = getIndexIterator(h(key.hashCode()));        
-        Entry<K, V> entry;      
+        Iterator<Integer> index = getIndexIterator(h(key.hashCode()));
+        Entry<K, V> entry;
 
-        while(index.hasNext()){
+        while (index.hasNext()) {
             entry = table[index.next()];
             EntryStatus s = entry.getStatus();
-            if(s == EntryStatus.DISPONIBLE) return null;
-            if(s == EntryStatus.OCUPADO){
-                if(entry.getKey() == key) return entry;
+            if (s == EntryStatus.DISPONIBLE) {
+                return null;
+            }
+            if (s == EntryStatus.OCUPADO) {
+                if (entry.getKey() == key) {
+                    return entry;
+                }
             }
             // si el estado es tumba continua.
         }
         // se recorrieron todas las casillas y no esta el objeto.
-        return null;        
+        return null;
     }
 
     /**
@@ -593,14 +597,16 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         this.modCount++;
 
         // recorrer el viejo arreglo y redistribuir los objetos que tenia...
-        for (Entry<K, V> x : this.table) {                       
-            if(x == null) continue;
+        for (Entry<K, V> x : this.table) {
+            if (x == null) {
+                continue;
+            }
             // obtener su nuevo valor de dispersión para el nuevo arreglo...
             K key = x.getKey();
             int y = this.h(key, temp.length);
 
             // insertarlo en el nuevo arreglo, en la lista numero "y"...
-            temp[y] = new Entry(key, x.getValue());            
+            temp[y] = new Entry(key, x.getValue());
         }
 
         // cambiar la referencia table para que apunte a temp...
@@ -642,33 +648,33 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             k *= -1;
         }
         return k % t;
-    }   
-   
-    private Iterator<Integer> getIndexIterator(int start){
+    }
+
+    private Iterator<Integer> getIndexIterator(int start) {
         return new CuadraticIterator(start, table.length);
     }
 
     //************************ Clases Internas.
-    
     /**
-     * Iterador para recorrer los proximos indices de la tabla en forma cuadratica.
+     * Iterador para recorrer los proximos indices de la tabla en forma
+     * cuadratica.
      */
     private class CuadraticIterator implements Iterator<Integer> {
 
         // El indice inicial.
         int start;
-        
+
         int current_step;
-        
+
         // La cantidad de iteraciones máxima.
         int max_step;
-        
-        public CuadraticIterator(int start_index, int max_step){
+
+        public CuadraticIterator(int start_index, int max_step) {
             this.start = start_index;
             this.current_step = 0;
             this.max_step = max_step;
         }
-        
+
         @Override
         public boolean hasNext() {
             return current_step + 1 <= max_step;
@@ -677,114 +683,113 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         @Override
         public Integer next() {
             // La primera vez retorna el mismo índice (+ 0)
-            if(current_step == 0){
+            if (current_step == 0) {
                 current_step++;
                 return start;
             }
             return start + (int) Math.pow(current_step++, 2);
         }
-        
+
     }
-    
+
     /**
-     * Iterador base para las vistas state-less.
-     * Implementa Iterator<Entry<K,V>> pero no lo declara. (Renombra el metodo
-     * next por nextEntry).
+     * Iterador base para las vistas state-less. Implementa Iterator<Entry<K,V>>
+     * pero no lo declara. (Renombra el metodo next por nextEntry).
      */
     private abstract class EntryIterator {
+
         // índice de la lista actualmente recorrida...
-            private int current_index;
+        private int current_index;
 
-            // índice de la lista anterior (si se requiere en remove())...
-            private int last_index;
+        // índice de la lista anterior (si se requiere en remove())...
+        private int last_index;
 
-            // el valor que debería tener el modCount de la tabla completa...
-            private int expected_modCount;
+        // el valor que debería tener el modCount de la tabla completa...
+        private int expected_modCount;
 
-            /*
+        /*
              * Crea un iterador comenzando en la primera lista. Activa el 
              * mecanismo fail-fast.
-             */
-            public EntryIterator() {
-                current_index = this.buscarIndiceValido(-1);
-                last_index = -1;
-                expected_modCount = TSBHashtable.this.modCount;
-            }
+         */
+        public EntryIterator() {
+            current_index = this.buscarIndiceValido(-1);
+            last_index = -1;
+            expected_modCount = TSBHashtable.this.modCount;
+        }
 
-            /*
+        /*
              * Determina si hay al menos un elemento en la tabla que no haya 
              * sido retornado por next(). 
-             */
-            public boolean hasNext() {
-                return current_index != -1;
-            }
+         */
+        public boolean hasNext() {
+            return current_index != -1;
+        }
 
-            /*
+        /*
              * Retorna el siguiente elemento disponible en la tabla.
-             */
-            public Entry<K,V> nextEntry() {
-                // control: fail-fast iterator...
-                if (TSBHashtable.this.modCount != expected_modCount) {
-                    throw new ConcurrentModificationException("next(): modificación inesperada de tabla.");
-                }
-
-                if (!hasNext()) {
-                    throw new NoSuchElementException("next(): no existe el elemento pedido.");
-                }
-
-                // variable auxiliar t para simplificar accesos...
-                Entry<K, V> t[] = TSBHashtable.this.table;
-                
-                Entry<K, V> entry = t[current_index];
-                last_index = current_index;
-                // Calculo del proximo indice
-                current_index = this.buscarIndiceValido(current_index);               
-                return entry;
+         */
+        public Entry<K, V> nextEntry() {
+            // control: fail-fast iterator...
+            if (TSBHashtable.this.modCount != expected_modCount) {
+                throw new ConcurrentModificationException("next(): modificación inesperada de tabla.");
             }
 
-            /*
+            if (!hasNext()) {
+                throw new NoSuchElementException("next(): no existe el elemento pedido.");
+            }
+
+            // variable auxiliar t para simplificar accesos...
+            Entry<K, V> t[] = TSBHashtable.this.table;
+
+            Entry<K, V> entry = t[current_index];
+            last_index = current_index;
+            // Calculo del proximo indice
+            current_index = this.buscarIndiceValido(current_index);
+            return entry;
+        }
+
+        /*
              * Remueve el elemento actual de la tabla, dejando el iterador en la
              * posición anterior al que fue removido. El elemento removido es el
              * que fue retornado la última vez que se invocó a next(). El método
              * sólo puede ser invocado una vez por cada invocación a next().
-             */
-            public void remove() {
-                if (last_index == -1) {
-                    throw new IllegalStateException("remove(): debe invocar a next() antes de remove()...");
-                }
+         */
+        public void remove() {
+            if (last_index == -1) {
+                throw new IllegalStateException("remove(): debe invocar a next() antes de remove()...");
+            }
 
-                // TODO: Creo que esto deberia ser un metodo de la HashTable,
-                //       el iterador no deberia modificarla directamente.
-                
-                // eliminar el objeto que retornó next() la última vez...
-                table[last_index].status = EntryStatus.TUMBA;
-                last_index = -1;
-                
-                // la tabla tiene un elemento menos...
-                TSBHashtable.this.count--;
-                // fail_fast iterator: todo en orden...
-                TSBHashtable.this.modCount++;
-                expected_modCount++;
-            }
-            
-            /**
-             * Busca el primer indice válido por encima del pasado por parametro.
-             * Se considera indice valido a aquel que apunta a un entry que esta
-             * ocupado (no tumba ni disponible).
-             * 
-             * @param from el valor a partir del cual buscar (no lo incluye)
-             * @return el proximo indice valido o -1 si no existe.
-             */
-            private int buscarIndiceValido(int from){
-                for(int i = from + 1; i < table.length; i++){
-                    if(table[i] != null && table[i].estaOcupado()){
-                        return i;
-                    }
+            // TODO: Creo que esto deberia ser un metodo de la HashTable,
+            //       el iterador no deberia modificarla directamente.
+            // eliminar el objeto que retornó next() la última vez...
+            table[last_index].status = EntryStatus.TUMBA;
+            last_index = -1;
+
+            // la tabla tiene un elemento menos...
+            TSBHashtable.this.count--;
+            // fail_fast iterator: todo en orden...
+            TSBHashtable.this.modCount++;
+            expected_modCount++;
+        }
+
+        /**
+         * Busca el primer indice válido por encima del pasado por parametro. Se
+         * considera indice valido a aquel que apunta a un entry que esta
+         * ocupado (no tumba ni disponible).
+         *
+         * @param from el valor a partir del cual buscar (no lo incluye)
+         * @return el proximo indice valido o -1 si no existe.
+         */
+        private int buscarIndiceValido(int from) {
+            for (int i = from + 1; i < table.length; i++) {
+                if (table[i] != null && table[i].estaOcupado()) {
+                    return i;
                 }
-                return -1;
             }
+            return -1;
+        }
     }
-    
+
     /*
      * Clase interna que representa los pares de objetos que se almacenan en la
      * tabla hash: son instancias de esta clase las que realmente se guardan en 
@@ -793,7 +798,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * parámetros es null.
      */
     private class Entry<K, V> implements Map.Entry<K, V> {
-        
+
         private K key;
         private V value;
 
@@ -802,7 +807,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         // 1: Ocupado
         // 2: Tumba
         private EntryStatus status;
-        
+
         public Entry(K key, V value) {
             if (key == null || value == null) {
                 throw new IllegalArgumentException("Entry(): parámetro null...");
@@ -817,25 +822,26 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             this.value = null;
             this.status = EntryStatus.DISPONIBLE;
         }
-        
+
         // --- Estados ---
-        public boolean estaDisponible(){
+        public boolean estaDisponible() {
             // Sin uso...
             return status == EntryStatus.DISPONIBLE;
         }
-        
-        public boolean estaOcupado(){
+
+        public boolean estaOcupado() {
             return status == EntryStatus.OCUPADO;
         }
-        
-        public boolean estaMuerto(){
+
+        public boolean estaMuerto() {
             return status == EntryStatus.TUMBA;
         }
-        
-        public void matar(){
+
+        public void matar() {
+            value = null;
             status = EntryStatus.TUMBA;
         }
-        
+
         @Override
         public K getKey() {
             return key;
@@ -851,10 +857,15 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         }
 
         @Override
+        /**
+         * Cambia el valor almacenado y pasa a estado ocupado.
+         * 
+         * @returns el valor almacenado.
+         */
         public V setValue(V value) {
             if (value == null) {
                 throw new IllegalArgumentException("setValue(): parámetro null...");
-            }            
+            }
             V old = this.value;
             this.value = value;
             status = EntryStatus.OCUPADO;
@@ -868,16 +879,16 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             hash = 61 * hash + Objects.hashCode(this.value);
             return hash;
         }
-        
+
         @Override
-        protected Object clone() throws CloneNotSupportedException{        
+        protected Object clone() throws CloneNotSupportedException {
             return new Entry(this.key, this.value);
-        }        
-        
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (this.status == EntryStatus.TUMBA) {
-                
+
                 return false;
             }
             if (this == obj) {
@@ -914,7 +925,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             return "";
         }
-        
+
     }
 
     /*
@@ -956,14 +967,14 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         private class KeySetIterator extends TSBHashtable.EntryIterator implements Iterator<K> {
 
-             /*
+            /*
              * Retorna el siguiente elemento disponible en la tabla.
              */
             @Override
             public K next() {
                 // TODO: No se porque obliga a castear, getKey siempre retorna K...
                 return (K) super.nextEntry().getKey();
-            }            
+            }
         }
     }
 
@@ -998,8 +1009,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             Map.Entry<K, V> entry = (Map.Entry<K, V>) o;
             K key = entry.getKey();
-            
-            return TSBHashtable.this.getEntry(key) == entry;                        
+
+            return TSBHashtable.this.getEntry(key) == entry;
         }
 
         /*
@@ -1013,10 +1024,10 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             if (!(o instanceof Entry)) {
                 return false;
-            }          
+            }
             Map.Entry<K, V> entry = (Map.Entry<K, V>) o;
             K key = entry.getKey();
-            
+
             // TODO: No estoy seguro, creo que deberia devolver true si el entry
             //       no existe.
             return TSBHashtable.this.remove(entry.getKey()) != null;
@@ -1037,7 +1048,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             @Override
             public Entry<K, V> next() {
                 return super.nextEntry();
-            }            
+            }
         }
     }
 
@@ -1071,7 +1082,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         @Override
         public void clear() {
             TSBHashtable.this.clear();
-        }      
+        }
 
         private class ValueCollectionIterator extends TSBHashtable.EntryIterator implements Iterator<V> {
 
@@ -1080,7 +1091,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
                 // TODO: No entiendo porque obliga a castear a V, es el unico 
                 //       objeto que retorna getValue().
                 return (V) super.nextEntry().getValue();
-            }            
+            }
         }
     }
 }
