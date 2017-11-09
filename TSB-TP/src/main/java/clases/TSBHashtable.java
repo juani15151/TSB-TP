@@ -34,7 +34,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     private int initial_capacity;
 
     // la cantidad de objetos que contiene la tabla.
-    private int count;
+    private int size;
 
     // el factor de carga para calcular si hace falta un rehashing.
     // no debe ser mayor a 0.5f para asegurar que el direccionamiento abierto
@@ -101,7 +101,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         this.table = new Entry[initial_capacity];
         this.initial_capacity = initial_capacity;
         setLoadFactor(load_factor);
-        this.count = 0;
+        this.size = 0;
         this.modCount = 0;
     }
 
@@ -153,7 +153,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     @Override
     public int size() {
-        return this.count;
+        return this.size;
     }
 
     /**
@@ -163,7 +163,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     @Override
     public boolean isEmpty() {
-        return (this.count == 0);
+        return (this.size == 0);
     }
 
     /**
@@ -229,7 +229,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         if (key == null || value == null) {
             throw new NullPointerException("put(): parámetro null");
         }
-        if ((count + 1) / table.length >= load_factor) {
+        if ((size + 1) / table.length >= load_factor) {
             rehash();
         }
         V old = null;
@@ -248,7 +248,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
         }
         if (old == null) {
-            count++;
+            size++;
         }
         modCount++;
         return old;
@@ -278,9 +278,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
                 break;
             }
             if (table[i].key == key) {
-                if (table[i].estaOcupado()) {
-                    old = table[i].matar();
-                    count--;
+                if (table[i].alive()) {
+                    old = table[i].kill();
+                    size--;
                     modCount++;
                 }
                 // Si el entry es una tumba, el objeto ya fue borrado.
@@ -314,7 +314,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     @Override
     public void clear() {
         this.table = new Entry[initial_capacity];
-        this.count = 0;
+        this.size = 0;
         this.modCount++;
     }
 
@@ -484,12 +484,12 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     public String toString() {
         StringBuilder cad = new StringBuilder("HashTable: ");
         cad.append("initial_cap:").append(initial_capacity);
-        cad.append("; count:").append(this.count);
+        cad.append("; count:").append(this.size);
         cad.append("; {");
 
         // Recorrido lineal de la tabla
         for (Entry<K, V> entry : table) {
-            if (entry != null && entry.estaOcupado()) {
+            if (entry != null && entry.alive()) {
                 cad.append(entry.toString()).append(" ");
             }
         }
@@ -520,7 +520,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         // Recorrido lineal de las entradas porque se desconoce la clave.
         for (Entry<K, V> entry : this.table) {
             if (entry != null
-                    && entry.estaOcupado()
+                    && entry.alive()
                     && entry.getValue() == value) {
 
                 return true;
@@ -551,7 +551,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             if(entry.getKey() == key){
                 // Si la entrada es tumba y tiene esta clave retorna null.
-                return entry.estaOcupado() ? entry : null;
+                return entry.alive() ? entry : null;
             }
         }
         // se recorrieron todas las casillas y no esta el objeto.
@@ -750,11 +750,11 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             // TODO: Creo que esto deberia ser un metodo de la HashTable,
             //       el iterador no deberia modificarla directamente.
             // eliminar el objeto que retornó next() la última vez...
-            table[last_index].status = EntryStatus.TUMBA;
+            table[last_index].kill();
             last_index = -1;
 
             // la tabla tiene un elemento menos...
-            TSBHashtable.this.count--;
+            TSBHashtable.this.size--;
             // fail_fast iterator: todo en orden...
             TSBHashtable.this.modCount++;
             expected_modCount++;
@@ -770,7 +770,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
          */
         private int buscarIndiceValido(int from) {
             for (int i = from + 1; i < table.length; i++) {
-                if (table[i] != null && table[i].estaOcupado()) {
+                if (table[i] != null && table[i].alive()) {
                     return i;
                 }
             }
@@ -790,8 +790,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         private K key;
         private V value;
 
-        // Estado de la entrada.
-        private EntryStatus status;
+        // Estado de la entrada. (Viva/Muerta)
+        private boolean alive;
 
         public Entry(K key, V value) {
             if (key == null || value == null) {
@@ -799,21 +799,21 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             this.key = key;
             this.value = value;
-            this.status = EntryStatus.OCUPADO;
+            this.alive = true;
         }
 
-        public boolean estaOcupado() {
-            return status == EntryStatus.OCUPADO;
+        public boolean alive() {
+            return alive;
         }
 
-        public boolean estaMuerto() {
-            return status == EntryStatus.TUMBA;
+        public boolean dead() {
+            return !alive;
         }
 
-        public V matar() {
+        public V kill() {
             V old = value;
             value = null;
-            status = EntryStatus.TUMBA;
+            alive = false;
             return old;
         }
 
@@ -839,7 +839,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             V old = this.value;
             this.value = value;
-            status = EntryStatus.OCUPADO;
+            alive = true;
             return old;
         }
 
@@ -869,7 +869,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
 
             final Entry other = (Entry) obj;
-            if(other.status != this.status){
+            if(other.alive != this.alive){
                 return false;
             }            
             if (!Objects.equals(this.key, other.key)) {
@@ -883,14 +883,14 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
          * Muestra su contenido solo si esta ocupado (no muerto).
          */
         public String toString() {
-            if (status == EntryStatus.OCUPADO) {
+            if (alive) {
                 return "(" + key.toString() + ", " + value.toString() + ")";
             }
             return "";
         }
 
         public String toStringWithDead() {
-            if (status == EntryStatus.OCUPADO) {
+            if (alive) {
                 return "(" + key.toString() + ", " + value.toString() + ", alive)";
             } else {            
                 return "(" + key.toString() + ", " + value.toString() + ", dead)";
@@ -918,7 +918,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         @Override
         public int size() {
-            return TSBHashtable.this.count;
+            return TSBHashtable.this.size;
         }
 
         @Override
