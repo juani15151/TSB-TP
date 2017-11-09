@@ -37,7 +37,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
     // el tamaño inicial de la tabla (tamaño con el que fue creada). Corresponde
     // al primer tamaño válido (nro primo) mayor al requerido.
-    private int initial_capacity;
+    private int initialCapacity;
 
     // la cantidad de objetos que contiene la tabla.
     private int size;
@@ -45,7 +45,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     // el factor de carga para calcular si hace falta un rehashing.
     // no debe ser mayor a 0.5f para asegurar que el direccionamiento abierto
     // funcione.
-    private float load_factor;
+    private float loadFactor;
 
     //************************ Atributos privados (para gestionar las vistas).
 
@@ -109,7 +109,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     }
     
     private void setLoadFactor(float factor) {
-        load_factor = factor < 0 || factor > 0.5f ? DEFAULT_LOAD_FACTOR : factor;
+        loadFactor = factor < 0 || factor > 0.5f ? DEFAULT_LOAD_FACTOR : factor;
     }
     
     /**
@@ -129,10 +129,10 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
              * forma que la tabla en su maxima capacidad pueda contener la 
              * cantidad de elementos pasada por parametro.
              */
-            initial_capacity = (int) ((float) initial_capacity / load_factor);
+            initial_capacity = (int) ((float) initial_capacity / loadFactor);
             initial_capacity = proximoPrimo(initial_capacity);
         }
-        this.initial_capacity = initial_capacity;
+        this.initialCapacity = initial_capacity;
     }
 
     private int proximoPrimo(int initial) {
@@ -243,7 +243,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         if (key == null || value == null) {
             throw new NullPointerException("put(): parámetro null");
         }
-        if ((size + 1) / table.length >= load_factor) {
+        if ((size + 1) / table.length >= loadFactor) {
             rehash();
         }
         // TODO: Todo este codigo es muy similar a getEntry, si se los puede
@@ -317,7 +317,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     @Override
     public void clear() {
-        this.table = new Entry[initial_capacity];
+        this.table = new Entry[initialCapacity];
         this.size = 0;
         this.modCount++;
     }
@@ -487,7 +487,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     @Override
     public String toString() {
         StringBuilder cad = new StringBuilder("HashTable: ");
-        cad.append("initial_cap:").append(initial_capacity);
+        cad.append("initialCap:").append(initialCapacity);
         cad.append("; count:").append(this.size);
         cad.append("; {");
 
@@ -701,22 +701,22 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     private abstract class EntryIterator {
 
         // índice de la lista actualmente recorrida...
-        private int current_index;
+        private int currentIndex;
 
         // índice de la lista anterior (si se requiere en remove())...
-        private int last_index;
+        private int lastIndex;
 
         // el valor que debería tener el modCount de la tabla completa...
-        private int expected_modCount;
+        private int expectedModCount;
 
         /*
              * Crea un iterador comenzando en la primera lista. Activa el 
              * mecanismo fail-fast.
          */
         public EntryIterator() {
-            current_index = this.buscarIndiceValido(-1);
-            last_index = -1;
-            expected_modCount = TSBHashtable.this.modCount;
+            currentIndex = this.buscarIndiceValido(-1);
+            lastIndex = -1;
+            expectedModCount = TSBHashtable.this.modCount;
         }
 
         /*
@@ -724,7 +724,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
              * sido retornado por next(). 
          */
         public boolean hasNext() {
-            return current_index != -1;
+            return currentIndex != -1;
         }
 
         /*
@@ -732,7 +732,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
          */
         public Entry<K, V> nextEntry() {
             // control: fail-fast iterator...
-            if (TSBHashtable.this.modCount != expected_modCount) {
+            if (TSBHashtable.this.modCount != expectedModCount) {
                 throw new ConcurrentModificationException("next(): modificación inesperada de tabla.");
             }
 
@@ -743,10 +743,10 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             // variable auxiliar t para simplificar accesos...
             Entry<K, V> t[] = TSBHashtable.this.table;
 
-            Entry<K, V> entry = t[current_index];
-            last_index = current_index;
+            Entry<K, V> entry = t[currentIndex];
+            lastIndex = currentIndex;
             // Calculo del proximo indice
-            current_index = this.buscarIndiceValido(current_index);
+            currentIndex = this.buscarIndiceValido(currentIndex);
             return entry;
         }
 
@@ -757,21 +757,21 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
              * sólo puede ser invocado una vez por cada invocación a next().
          */
         public void remove() {
-            if (last_index == -1) {
+            if (lastIndex == -1) {
                 throw new IllegalStateException("remove(): debe invocar a next() antes de remove()...");
             }
 
             // TODO: Creo que esto deberia ser un metodo de la HashTable,
             //       el iterador no deberia modificarla directamente.
             // eliminar el objeto que retornó next() la última vez...
-            table[last_index].kill();
-            last_index = -1;
+            table[lastIndex].kill();
+            lastIndex = -1;
 
             // la tabla tiene un elemento menos...
             TSBHashtable.this.size--;
             // fail_fast iterator: todo en orden...
             TSBHashtable.this.modCount++;
-            expected_modCount++;
+            expectedModCount++;
         }
 
         /**
