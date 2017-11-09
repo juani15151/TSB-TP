@@ -246,6 +246,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         if ((size + 1) / table.length >= load_factor) {
             rehash();
         }
+        // TODO: Todo este codigo es muy similar a getEntry, si se los puede
+        //       unificar de alguna manera, se reduce el codigo duplicado.
         V old = null;
         Iterator<Integer> it = getIndexIterator(h(key.hashCode()));
         int i;
@@ -278,12 +280,12 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @throws NullPointerException - if the key is null.
      */
     @Override
-    public V remove(Object object) {
-        if (object == null) {
+    public V remove(Object key) {
+        if (key == null) {
             throw new NullPointerException("remove(): parámetro null");
         }
-        // throws ClassCastException si object no es un K valido.
-        Entry<K, V> entry = this.getEntry((K) object);
+        // throws ¿ClassCastException? o similar si key no es un K valido.
+        Entry<K, V> entry = this.getEntry((K) key);
         
         if (entry != null && entry.alive()){
             size--;
@@ -562,11 +564,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
     /**
      * Incrementa el tamaño de la tabla y reorganiza su contenido. Se invoca
-     * automaticamente cuando se detecta que la cantidad promedio de nodos por
-     * lista supera a cierto el valor critico dado por (10 * load_factor). Si el
-     * valor de load_factor es 0.8, esto implica que el límite antes de invocar
-     * rehash es de 8 nodos por lista en promedio, aunque seria aceptable hasta
-     * unos 10 nodos por lista.
+     * automaticamente cuando se detecta que la cantidad de objetos supera el 
+     * factor de carga establecido.
      */
     protected void rehash() {
         int old_length = table.length;
@@ -581,7 +580,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         }
 
         // crear el nuevo arreglo con new_length entradas...
-        Entry<K, V> temp[] = new Entry[new_length];
+        Entry<K, V> new_table[] = new Entry[new_length];
 
         // notificación fail-fast iterator... la tabla cambió su estructura...
         this.modCount++;
@@ -593,14 +592,14 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             // obtener su nuevo valor de dispersión para el nuevo arreglo...
             K key = x.getKey();
-            int y = this.h(key, temp.length);
+            int y = this.h(key, new_table.length);
 
             // insertarlo en el nuevo arreglo, en la lista numero "y"...
-            temp[y] = new Entry(key, x.getValue());
+            new_table[y] = new Entry(key, x.getValue());
         }
 
         // cambiar la referencia table para que apunte a temp...
-        this.table = temp;
+        this.table = new_table;
     }
 
     //************************ Métodos privados.
@@ -651,16 +650,17 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     private class CuadraticIterator implements Iterator<Integer> {
 
-        // El indice inicial.
+        // El indice inicial. (lo devolvera el primer next() e ira aumentando 
+        // segun una funcion cuadratica)
         int start;
 
         int current_step;
 
-        // La cantidad de iteraciones máxima.
+        // La cantidad de iteraciones máxima. Usualmente el tamaño del array.
         int max_step;
 
-        public CuadraticIterator(int start_index, int max_step) {
-            this.start = start_index;
+        public CuadraticIterator(int start_value, int max_step) {
+            this.start = start_value;
             this.current_step = 0;
             this.max_step = max_step;
         }
