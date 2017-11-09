@@ -177,7 +177,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     @Override
     public boolean isEmpty() {
-        return (this.size == 0);
+        return this.size == 0;
     }
 
     /**
@@ -189,7 +189,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     @Override
     public boolean containsKey(Object key) {
-        return (this.get((K) key) != null);
+        return this.get((K) key) != null;
     }
 
     /**
@@ -278,31 +278,19 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @throws NullPointerException - if the key is null.
      */
     @Override
-    public V remove(Object key) {
-        if (key == null) {
+    public V remove(Object object) {
+        if (object == null) {
             throw new NullPointerException("remove(): parámetro null");
         }
-        V old = null;
-        Iterator<Integer> it = getIndexIterator(h(key.hashCode()));
-        int i;
-        while (it.hasNext()) {
-            i = it.next();
-            if (table[i] == null) {
-                // El objeto no esta en la tabla.
-                break;
-            }
-            if (table[i].key == key) {
-                if (table[i].alive()) {
-                    old = table[i].kill();
-                    size--;
-                    modCount++;
-                }
-                // Si el entry es una tumba, el objeto ya fue borrado.
-                break;
-            }
+        // throws ClassCastException si object no es un K valido.
+        Entry<K, V> entry = this.getEntry((K) object);
+        
+        if (entry != null && entry.alive()){
+            size--;
+            modCount++;
+            return entry.kill();
         }
-
-        return old;
+        return null;
     }
 
     /**
