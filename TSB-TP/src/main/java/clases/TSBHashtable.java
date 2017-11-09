@@ -23,7 +23,13 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
     // el tamaño máximo que podrá tener el arreglo de soporte...
     // TODO: Modificar para que sea el mayor primo que admite un Integer.
-    private final static int MAX_SIZE = Integer.MAX_VALUE;
+    private final static int MAX_CAPACITY = Integer.MAX_VALUE;
+    
+    // Capacidad por defecto.
+    private final static int DEFAULT_CAPACITY = 10;
+    
+    // Factor de carga por defecto. NO debe ser mayor a 0.5f
+    private final static float DEFAULT_LOAD_FACTOR = 0.5f;
 
     //************************ Atributos privados (estructurales).
     // la tabla hash: el arreglo que contiene las entradas...
@@ -61,7 +67,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
     //************************ Constructores.
     public TSBHashtable() {
-        this(13, 0.5f);
+        this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
     /**
@@ -71,7 +77,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * @param initial_capacity la capacidad inicial de la tabla.
      */
     public TSBHashtable(int initial_capacity) {
-        this(initial_capacity, 0.5f);
+        this(initial_capacity, DEFAULT_LOAD_FACTOR);
     }
 
     /**
@@ -84,9 +90,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      */
     public TSBHashtable(int initial_capacity, float load_factor) {
         if (initial_capacity <= 0) {
-            initial_capacity = 13;
-        } else if (initial_capacity > TSBHashtable.MAX_SIZE) {
-            initial_capacity = TSBHashtable.MAX_SIZE;
+            initial_capacity = DEFAULT_CAPACITY;
+        } else if (initial_capacity > TSBHashtable.MAX_CAPACITY) {
+            initial_capacity = TSBHashtable.MAX_CAPACITY;
         } else {
             /* 
              * La capacidad inicial se aumenta en funcion del load_factor de 
@@ -142,7 +148,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     }
 
     private void setLoadFactor(float factor) {
-        load_factor = factor < 0 || factor > 0.5f ? 0.5f : factor;
+        load_factor = factor < 0 || factor > 0.5f ? DEFAULT_LOAD_FACTOR : factor;
     }
 
     // ***** Implementación de métodos especificados por Map. *****
@@ -574,8 +580,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         // no permitir que la tabla tenga un tamaño mayor al límite máximo...
         // ... para evitar overflow y/o desborde de índices...
-        if (new_length > TSBHashtable.MAX_SIZE) {
-            new_length = TSBHashtable.MAX_SIZE;
+        if (new_length > TSBHashtable.MAX_CAPACITY) {
+            new_length = TSBHashtable.MAX_CAPACITY;
         }
 
         // crear el nuevo arreglo con new_length entradas...
