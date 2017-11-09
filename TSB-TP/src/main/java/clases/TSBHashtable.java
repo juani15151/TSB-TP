@@ -672,6 +672,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         @Override
         public Integer next() {
+            // TODO: Restar si supera el tamaño del array (hacer ciclo cerrado, 
+            // si es un array[9] y el indice es 10, retornar 0.
             // La primera vez retorna el mismo índice (+ 0)
             if (current_step == 0) {
                 current_step++;
