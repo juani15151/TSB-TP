@@ -640,6 +640,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     }
 
     private Iterator<Integer> getIndexIterator(int start) {
+        // Puesto en un metodo para reducir dependencia, el iterador se puede
+        // cambiar por otro (ej. lineal) sin mayores inconvenientes.
         return new CuadraticIndexIterator(start, table.length);
     }
 
@@ -647,6 +649,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     /**
      * Iterador para recorrer los proximos indices de la tabla en forma
      * cuadratica.
+     * El iterador garantiza que recorrera todas las entradas de la tabla antes
+     * de repetir un elemento si se cumple que el tamaño del arreglo es un 
+     * numero primo y la carga de la tabla menor al 50%.
      */
     private class CuadraticIndexIterator implements Iterator<Integer> {
 
@@ -654,38 +659,35 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         // segun una funcion cuadratica)
         int start;
 
-        int current_step;
+        // Cantidad de invocaciones a next() (iteraciones del iterador).
+        int iterations;
 
-        // El numero maximo (exclusivo) que retornara el iterador, si genera un
-        // numero mayor se utilizara el concepto de lista cerrada.
-        int max_index;
+        // El numero maximo (exclusivo) que retornara el iterador.
+        int length;
 
-        public CuadraticIndexIterator(int start_index, int max_index) {
-            this.start = start_index;
-            this.current_step = 0;
-            this.max_index = max_index;
+        public CuadraticIndexIterator(int startIndex, int arrayLength) {
+            this.start = startIndex;
+            this.iterations = 0;
+            this.length = arrayLength;
         }
 
         @Override
         public boolean hasNext() {
-            /*
-             * Mientras load_factor sea menor o igual a 0.5 y el tamaño del
-             * arreglo un numero primo, se garantiza que se recorran todas las
-             * entradas del arreglo antes de repetir.
-             */
-            return true;
+            return iterations < length;
         }
 
         @Override
         public Integer next() {
             // La primera vez retorna el mismo índice (+ 0)
-            if (current_step == 0) {
-                current_step++;
+            if (iterations == 0) {
+                iterations++;
                 return start;
             }
-            int index = start + (int) Math.pow(current_step++, 2);
-            while (index >= max_index){
-                index -= max_index;
+            int index = start + (int) Math.pow(iterations++, 2);
+            // TODO: Si se hacen muchas invocaciones el arreglo crece mucho,
+            //       restar de a 1 no es muy optimo...
+            while (index >= length){
+                index -= length;
             }
             return index;
         }
