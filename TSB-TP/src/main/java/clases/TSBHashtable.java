@@ -790,10 +790,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         private K key;
         private V value;
 
-        // Los valores de cada Entry son: 
-        // 0: Disponible
-        // 1: Ocupado
-        // 2: Tumba
+        // Estado de la entrada.
         private EntryStatus status;
 
         public Entry(K key, V value) {
@@ -946,7 +943,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
              */
             @Override
             public K next() {
-                // TODO: No se porque obliga a castear, getKey siempre retorna K...
+                // Hay que castear porque tengo acceso a tablas con distinto
+                // K (no es necesariamente el mismo).
                 return (K) super.nextEntry().getKey();
             }
         }
@@ -1009,7 +1007,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         @Override
         public int size() {
-            return TSBHashtable.this.count;
+            return TSBHashtable.this.size();
         }
 
         @Override
@@ -1017,7 +1015,8 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             TSBHashtable.this.clear();
         }
 
-        private class EntrySetIterator extends TSBHashtable.EntryIterator implements Iterator<Map.Entry<K, V>> {
+        private class EntrySetIterator extends TSBHashtable.EntryIterator 
+                implements Iterator<Map.Entry<K, V>> {
 
             @Override
             public Entry<K, V> next() {
@@ -1045,7 +1044,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         @Override
         public int size() {
-            return TSBHashtable.this.count;
+            return TSBHashtable.this.size();
         }
 
         @Override

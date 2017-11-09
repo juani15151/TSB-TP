@@ -10,7 +10,6 @@ package clases;
  * @author juani
  */
 public enum EntryStatus {
-    DISPONIBLE,
     OCUPADO,
     TUMBA
 }
