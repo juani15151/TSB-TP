@@ -1014,7 +1014,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             Map.Entry<K, V> entry = (Map.Entry<K, V>) o;
             K key = entry.getKey();
 
-            // TODO: No estoy seguro, creo que deberia devolver true si el entry
+            // TODO: No estoy seguro, tal vez deberia devolver true si el entry
             //       no existe.
             return TSBHashtable.this.remove(entry.getKey()) != null;
         }
@@ -1075,8 +1075,6 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
             @Override
             public V next() {
-                // TODO: No entiendo porque obliga a castear a V, es el unico 
-                //       objeto que retorna getValue().
                 return (V) super.nextEntry().getValue();
             }
         }
