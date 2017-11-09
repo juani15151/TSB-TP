@@ -805,18 +805,6 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             this.status = EntryStatus.OCUPADO;
         }
 
-        private Entry() {
-            this.key = null;
-            this.value = null;
-            this.status = EntryStatus.DISPONIBLE;
-        }
-
-        // --- Estados ---
-        public boolean estaDisponible() {
-            // Sin uso...
-            return status == EntryStatus.DISPONIBLE;
-        }
-
         public boolean estaOcupado() {
             return status == EntryStatus.OCUPADO;
         }
@@ -835,10 +823,6 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         @Override
         public K getKey() {
             return key;
-        }
-
-        public EntryStatus getStatus() {
-            return status;
         }
 
         @Override
@@ -877,10 +861,6 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            if (this.status == EntryStatus.TUMBA) {
-
-                return false;
-            }
             if (this == obj) {
                 return true;
             }
@@ -892,6 +872,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
 
             final Entry other = (Entry) obj;
+            if(other.status != this.status){
+                return false;
+            }            
             if (!Objects.equals(this.key, other.key)) {
                 return false;
             }
@@ -899,6 +882,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         }
 
         @Override
+        /**
+         * Muestra su contenido solo si esta ocupado (no muerto).
+         */
         public String toString() {
             if (status == EntryStatus.OCUPADO) {
                 return "(" + key.toString() + ", " + value.toString() + ")";
@@ -909,11 +895,9 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         public String toStringWithDead() {
             if (status == EntryStatus.OCUPADO) {
                 return "(" + key.toString() + ", " + value.toString() + ", alive)";
-            }
-            if (status == EntryStatus.TUMBA) {
+            } else {            
                 return "(" + key.toString() + ", " + value.toString() + ", dead)";
             }
-            return "";
         }
 
     }
