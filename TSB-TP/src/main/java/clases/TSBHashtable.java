@@ -293,16 +293,12 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             }
             if (table[i].key == key) {
                 if (table[i].estaOcupado()) {
-                    old = table[i].value;
-                    table[i].matar();
+                    old = table[i].matar();
                     count--;
-                    modCount++;
-                    break;
-
-                } else { // EntryStatus.tumba
-                    // El objeto ya fue borrado.
-                    break;
+                    modCount++;                   
                 }
+                // Si el entry es una tumba, el objeto ya fue borrado.
+                break;
             }
         }
 
@@ -837,9 +833,11 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             return status == EntryStatus.TUMBA;
         }
 
-        public void matar() {
+        public V matar() {
+            V old = value;
             value = null;
             status = EntryStatus.TUMBA;
+            return old;
         }
 
         @Override
