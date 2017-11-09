@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.AbstractCollection;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,38 +12,14 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Clase para emular la funcionalidad de la clase java.util.Hashtable provista
- * en forma nativa por Java. Una TSBHashtable usa un arreglo de listas de la
- * clase TSBArrayList a modo de buckets (o listas de desborde) para resolver las
- * colisiones que pudieran presentarse.
+ * Clase que provee una tabla Hash con direccionamiento abierto.
  *
- * Se almacenan en la tabla pares de objetos (key, value), en donde el objeto
- * key actúa como clave para identificar al objeto value. La tabla no admite
- * repetición de claves (no se almacenarán dos pares de objetos con la misma
- * clave). Tampoco acepta referencias nulas (tanto para las key como para los
- * values): no será insertado un par (key, value) si alguno de ambos objetos es
- * null.
- *
- * Se ha emulado tanto como ha sido posible el comportamiento de la clase ya
- * indicada java.util.Hashtable. En esa clase, el parámetro loadFactor se usa
- * para determinar qué tan llena está la tabla antes de lanzar un proceso de
- * rehash: si loadFactor es 0.75, entonces se hará un rehash cuando la cantidad
- * de casillas ocupadas en el arreglo de soporte sea un 75% del tamaño de ese
- * arreglo. En nuestra clase TSBHashtable, mantuvimos el concepto de loadFactor
- * (ahora llamado load_factor) pero con una interpretación distinta: en nuestro
- * modelo, se lanza un rehash si la cantidad promedio de valores por lista es
- * mayor a cierto número constante y pequeño, que asociamos al load_factor para
- * mantener el espíritu de la implementación nativa. En nuestro caso, si el
- * valor load_factor es 0.8 entonces se lanzará un rehash si la cantidad
- * promedio de valores por lista es mayor a 0.8 * 10 = 8 elementos por lista.
- *
- * @author Ing. Valerio Frittelli.
- * @version Septiembre de 2017.
+ * @version Noviembre de 2017.
  * @param <K> el tipo de los objetos que serán usados como clave en la tabla.
  * @param <V> el tipo de los objetos que serán los valores de la tabla.
  */
 public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
-    //************************ Constantes (privadas o públicas).    
+    //************************ Constantes.    
 
     // el tamaño máximo que podrá tener el arreglo de soporte...
     // TODO: Modificar para que sea el mayor primo que admite un Integer.
@@ -54,14 +29,16 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     // la tabla hash: el arreglo que contiene las entradas...
     private Entry<K, V> table[];
 
-    // el tamaño inicial de la tabla (tamaño con el que fue creada).
+    // el tamaño inicial de la tabla (tamaño con el que fue creada). Corresponde
+    // al primer tamaño válido (nro primo) mayor al requerido.
     private int initial_capacity;
 
-    // la cantidad de objetos que contiene la tabla...
+    // la cantidad de objetos que contiene la tabla.
     private int count;
 
     // el factor de carga para calcular si hace falta un rehashing.
-    // no debe ser mayor a 0.5f
+    // no debe ser mayor a 0.5f para asegurar que el direccionamiento abierto
+    // funcione.
     private float load_factor;
 
     //************************ Atributos privados (para gestionar las vistas).
@@ -83,10 +60,6 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
     protected transient int modCount;
 
     //************************ Constructores.
-    /**
-     * Crea una tabla vacía, con la capacidad inicial igual a 13 y con factor de
-     * carga igual a 0.5f.
-     */
     public TSBHashtable() {
         this(13, 0.5f);
     }
@@ -106,7 +79,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * de carga indicado. La capacidad de la tabla debe ser un numero primo y el
      * factor de carga siempre menor a 0.5f para garantizar inserciones.
      *
-     * @param initial_capacity la capacidad inicial de la tabla.
+     * @param initial_capacity la capacidad inicial usable de la tabla.
      * @param load_factor el factor de carga de la tabla.
      */
     public TSBHashtable(int initial_capacity, float load_factor) {
@@ -115,10 +88,16 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         } else if (initial_capacity > TSBHashtable.MAX_SIZE) {
             initial_capacity = TSBHashtable.MAX_SIZE;
         } else {
+            /* 
+             * La capacidad inicial se aumenta en funcion del load_factor de 
+             * forma que la tabla en su maxima capacidad pueda contener la 
+             * cantidad de elementos pasada por parametro.
+             */
+            initial_capacity = (int) ((float) initial_capacity / load_factor);
             initial_capacity = proximoPrimo(initial_capacity);
         }
 
-        // Nota: Ahora la lista empieza con null en lugar de Entry's vacios.
+        // Nota: La lista empieza con null en lugar de Entry's vacios.
         this.table = new Entry[initial_capacity];
         this.initial_capacity = initial_capacity;
         setLoadFactor(load_factor);
