@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -61,15 +62,14 @@ public class FXMLController implements Initializable {
     }
     
     private void cargarLista(File file){
-        List<String> lst = new ArrayList();
         try{
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line = null;
             while ((line = br.readLine()) != null) {
                 String[] str = line.split(" ");
                 for(int i = 0; i < str.length; i++){
-                    if(!str[i].isEmpty()){
-                        lst.add(str[i]);
+                    if(!str[i].equals(" ")&&!str[i].isEmpty() && !lstPalabras.getItems().contains(str[i])){
+                        lstPalabras.getItems().add(str[i]);
                     }
                 }
             }
@@ -77,7 +77,10 @@ public class FXMLController implements Initializable {
         catch(Exception e){
             e.printStackTrace();
         }
-        
-        lstPalabras.getItems().addAll(lst);
+    }
+
+    @FXML
+    private void eventOnMouseclicked(MouseEvent event) {
+        tfBusqueda.setText(lstPalabras.getSelectionModel().getSelectedItem().toString());
     }
 }

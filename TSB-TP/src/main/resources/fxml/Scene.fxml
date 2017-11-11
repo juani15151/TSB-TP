@@ -10,7 +10,7 @@
 <AnchorPane id="AnchorPane" prefHeight="347.0" prefWidth="439.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsb.tp.FXMLController">
     <children>
         <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
-      <ListView fx:id="lstPalabras" layoutX="14.0" layoutY="64.0" prefHeight="274.0" prefWidth="200.0" AnchorPane.leftAnchor="14.0" />
+      <ListView fx:id="lstPalabras" layoutX="14.0" layoutY="64.0" onMouseClicked="#eventOnMouseclicked" prefHeight="274.0" prefWidth="200.0" AnchorPane.leftAnchor="14.0" />
       <Button fx:id="btCargarArchivo" layoutX="307.0" layoutY="14.0" mnemonicParsing="false" onAction="#CargarArchivo" prefHeight="25.0" prefWidth="118.0" text="Cargar Archivo..." />
       <Text layoutX="14.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Palabras: " />
       <TextField fx:id="tfArchivo" editable="false" layoutX="14.0" layoutY="12.0" prefHeight="25.0" prefWidth="281.0" />
