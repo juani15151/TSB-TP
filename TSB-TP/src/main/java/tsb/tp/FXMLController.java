@@ -43,6 +43,7 @@ public class FXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        
     }    
 
     @FXML
@@ -105,7 +106,6 @@ public class FXMLController implements Initializable {
             alert.setTitle("Error");
             alert.setHeaderText("Error al cargar la lista");
             alert.setContentText(null);
-
             alert.showAndWait();
         }
         mostrarPalabras();
@@ -126,25 +126,19 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
     }
+    
+    
+    /**
+     * Busca la cantidad de repeticiones de la palabra en el archivo ya leido.
+     * 
+     * @param palabra
+     * @return cantidad de repeticiones.
+     */
     private int BuscarPalabra(String palabra) {
-        File file = new File(tfArchivo.getText());
-        int counter = 0;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                String[] str = line.split(" ");
-                for (int i = 0; i < str.length; i++) {
-                    if (str[i].equals(palabra)) {
-                        counter++;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("nada que hacer");
-        }
-        return counter;
+        return table.get(palabra);        
     }
+    
+    
     @FXML
     private void BuscarPalabra(ActionEvent event) {
         System.out.println(table);
@@ -155,7 +149,6 @@ public class FXMLController implements Initializable {
             alert.setTitle("Error");
             alert.setHeaderText("No se encontro esa palabra");
             alert.setContentText(null);
-
             alert.showAndWait();
         }
     }
