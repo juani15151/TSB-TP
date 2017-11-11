@@ -3,7 +3,7 @@ package clases;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * Una clase con un main() simple para probar la clase TSBHashtable.

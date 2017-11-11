@@ -83,6 +83,7 @@ public class FXMLController implements Initializable {
         for(Map.Entry<String, Integer> palabra : table.entrySet()){
             System.out.println("Palabra: " + palabra.getKey() + 
                     " - Repeticiones: " + palabra.getValue());
+            lstPalabras.getItems().add(palabra.getKey());
         }        
     }
     
@@ -109,7 +110,7 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
         mostrarPalabras();
-    }
+    }  
 
     @FXML
     private void eventOnMouseclicked(MouseEvent event) {
