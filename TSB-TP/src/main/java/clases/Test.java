@@ -3,6 +3,7 @@ package clases;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 /**
  * Una clase con un main() simple para probar la clase TSBHashtable.
@@ -42,6 +43,6 @@ public class Test
         {
             Map.Entry<Integer, String> entry = it.next();
             System.out.println("Par: " + entry);
-        }
+        }        
     }
 }

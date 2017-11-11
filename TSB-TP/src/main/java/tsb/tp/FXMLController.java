@@ -5,8 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,12 +37,13 @@ public class FXMLController implements Initializable {
     @FXML
     private TextField tfRepeticiones;
     
-    TSBHashtable<String, Integer> table = new TSBHashtable<>(3, 0.2f);
+    TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        
     }    
 
     @FXML
@@ -76,38 +76,12 @@ public class FXMLController implements Initializable {
         }
     }
     
-    private void cargarHash(){
-        int[] counter = new int[lstPalabras.getItems().size()];
-        
-        File file = new File(tfArchivo.getText());
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                String[] str = line.split(" ");
-                for (int i = 0; i < str.length; i++) {
-                    for(int j = 0; j < counter.length; j++){
-                        if (str[i].equals(lstPalabras.getItems().get(j))) {
-                            counter[j]++;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("nada que hacer");
-        }
-        
-        for(int i = 0; i < lstPalabras.getItems().size(); i++){
-            table.put(lstPalabras.getItems().get(i), counter[i]);
-        }
-        
-        /*
-        for(int i = 0; i < lstPalabras.getItems().size(); i++){
-            String palabra = lstPalabras.getItems().get(i);
-            System.out.println("Palabra: " + palabra + " Repeticiones: " + BuscarPalabra(palabra));
-            table.put(palabra, BuscarPalabra(palabra));
-        }
-        System.out.println(table);*/
+    private void mostrarPalabras(){
+        // Para DEBUG solamente.
+        for(Map.Entry<String, Integer> palabra : table.entrySet()){
+            System.out.println("Palabra: " + palabra.getKey() + 
+                    " - Repeticiones: " + palabra.getValue());
+        }        
     }
     
     private void cargarLista(File file){
@@ -117,9 +91,10 @@ public class FXMLController implements Initializable {
             while ((line = br.readLine()) != null) {
                 String[] str = line.split(" ");
                 for(int i = 0; i < str.length; i++){
-                    str[i] = checkPalabra(str[i]);
-                    if( !str[i].contains("www") &&!str[i].equals(" ")&& !str[i].isEmpty() && !lstPalabras.getItems().contains(str[i])){
-                        lstPalabras.getItems().add(str[i]);
+                    if(!str[i].equals(" ")&&!str[i].isEmpty()){
+                        // Agrega la clave a la tabla, si ya existe le suma 1.
+                        // El metodo merge esta definido en Map.
+                        table.merge(str[i], 1, Integer::sum);
                     }
                 }
             }
@@ -129,10 +104,9 @@ public class FXMLController implements Initializable {
             alert.setTitle("Error");
             alert.setHeaderText("Error al cargar la lista");
             alert.setContentText(null);
-
             alert.showAndWait();
         }
-        cargarHash();
+        mostrarPalabras();
     }
 
     @FXML
@@ -150,25 +124,19 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
     }
+    
+    
+    /**
+     * Busca la cantidad de repeticiones de la palabra en el archivo ya leido.
+     * 
+     * @param palabra
+     * @return cantidad de repeticiones.
+     */
     private int BuscarPalabra(String palabra) {
-        File file = new File(tfArchivo.getText());
-        int counter = 0;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                String[] str = line.split(" ");
-                for (int i = 0; i < str.length; i++) {
-                    if (str[i].equals(palabra)) {
-                        counter++;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("nada que hacer");
-        }
-        return counter;
+        return table.get(palabra);        
     }
+    
+    
     @FXML
     private void BuscarPalabra(ActionEvent event) {
         System.out.println(table);
@@ -179,7 +147,6 @@ public class FXMLController implements Initializable {
             alert.setTitle("Error");
             alert.setHeaderText("No se encontro esa palabra");
             alert.setContentText(null);
-
             alert.showAndWait();
         }
     }
