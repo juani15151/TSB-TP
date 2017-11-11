@@ -38,6 +38,8 @@ public class FXMLController implements Initializable {
     @FXML
     private TextField tfRepeticiones;
     
+    TSBHashtable<String, Integer> table = new TSBHashtable<>(3, 0.2f);
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -70,15 +72,22 @@ public class FXMLController implements Initializable {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Error al cargar el archivo");
-            alert.setContentText("No se pudo cargar el archivo indicado.");
+            alert.setContentText(null);
 
             alert.showAndWait();
         }
-        
+    }
+    
+    private void cargarHash(){
+        for(int i = 0; i < lstPalabras.getItems().size(); i++){
+            String palabra = lstPalabras.getItems().get(i);
+            System.out.println("Palabra: " + palabra + " Repeticiones: " + BuscarPalabra(palabra));
+            table.put(palabra, BuscarPalabra(palabra));
+        }
+        System.out.println(table);
     }
     
     private void cargarLista(File file){
-        TSBHashtable<Integer, String> ht1 = new TSBHashtable<>(3, 0.2f);
         try{
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line = null;
@@ -95,10 +104,11 @@ public class FXMLController implements Initializable {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Error al cargar la lista");
-            alert.setContentText("No se pudo cargar la lista.");
+            alert.setContentText(null);
 
             alert.showAndWait();
         }
+        cargarHash();
     }
 
     @FXML
@@ -111,14 +121,12 @@ public class FXMLController implements Initializable {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Error al seleccionar una palabra");
-            alert.setContentText("No se pudo obtener la palabra seleccionada.");
+            alert.setContentText(null);
 
             alert.showAndWait();
         }
     }
-
-    @FXML
-    private void BuscarPalabra(ActionEvent event) {
+    private int BuscarPalabra(String palabra) {
         File file = new File(tfArchivo.getText());
         int counter = 0;
         try {
@@ -127,7 +135,7 @@ public class FXMLController implements Initializable {
             while ((line = br.readLine()) != null) {
                 String[] str = line.split(" ");
                 for (int i = 0; i < str.length; i++) {
-                    if (str[i].equals(tfBusqueda.getText().trim())) {
+                    if (str[i].equals(palabra)) {
                         counter++;
                     }
                 }
@@ -135,7 +143,20 @@ public class FXMLController implements Initializable {
         } catch (Exception e) {
             System.out.println("nada que hacer");
         }
-        
-        tfRepeticiones.setText(""+counter);
+        return counter;
+    }
+    @FXML
+    private void BuscarPalabra(ActionEvent event) {
+        System.out.println(table);
+        try{
+            tfRepeticiones.setText(table.get(tfBusqueda.getText()).toString());
+        }catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No se encontro esa palabra");
+            alert.setContentText(null);
+
+            alert.showAndWait();
+        }
     }
 }
