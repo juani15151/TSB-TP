@@ -1,5 +1,6 @@
 package tsb.tp;
 
+import clases.TSBHashtable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,6 +11,8 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -55,17 +58,27 @@ public class FXMLController implements Initializable {
         fileChooser.getExtensionFilters().add(allFilter);
         // Ponemos titulo al FileChooser
         fileChooser.setTitle("Buscar archivo");
-        
         // Obtenemos el archivo seleccionado del FileChooser
-        File archivo = fileChooser.showOpenDialog(null);
-        // Le seteamos el path al TextField de cargar archivo.
-        tfArchivo.textProperty().set(archivo.getPath());
-        // Cargamos la lista
-        cargarLista(archivo);
+        try{
+            File archivo = fileChooser.showOpenDialog(null);
+            // Le seteamos el path al TextField de cargar archivo.
+            tfArchivo.textProperty().set(archivo.getPath());
+            // Cargamos la lista
+            cargarLista(archivo);
+        }
+        catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error al cargar el archivo");
+            alert.setContentText("No se pudo cargar el archivo indicado.");
+
+            alert.showAndWait();
+        }
+        
     }
     
     private void cargarLista(File file){
-        lstPalabras.getItems().clear();
+        TSBHashtable<Integer, String> ht1 = new TSBHashtable<>(3, 0.2f);
         try{
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line = null;
@@ -79,7 +92,12 @@ public class FXMLController implements Initializable {
             }
         }
         catch(Exception e){
-            System.out.println("nada que hacer");
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error al cargar la lista");
+            alert.setContentText("No se pudo cargar la lista.");
+
+            alert.showAndWait();
         }
     }
 
@@ -89,7 +107,14 @@ public class FXMLController implements Initializable {
             if (!lstPalabras.getSelectionModel().getSelectedItem().isEmpty() && !lstPalabras.getItems().isEmpty()) {
                 tfBusqueda.setText(lstPalabras.getSelectionModel().getSelectedItem().toString());
             }
-        } catch(Exception e){}
+        } catch (Exception e) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error al seleccionar una palabra");
+            alert.setContentText("No se pudo obtener la palabra seleccionada.");
+
+            alert.showAndWait();
+        }
     }
 
     @FXML
