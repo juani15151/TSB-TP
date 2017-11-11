@@ -254,13 +254,11 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         while (it.hasNext()) {
             i = it.next();
             if (table[i] == null) {
-                System.out.println("Entrada Añadida");
                 table[i] = new Entry(key, value);
                 break;
             }
             else if (table[i].getKey().equals(key)) {
                 // Si esta ocupado retorna el objeto, si es tumba retorna null.
-                System.out.println("Entrada Existente");
                 old = table[i].setValue(value);
                 break;
             }

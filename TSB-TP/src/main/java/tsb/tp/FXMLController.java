@@ -79,8 +79,7 @@ public class FXMLController implements Initializable {
     private void mostrarPalabras(){
         // Para DEBUG solamente.
         for(Map.Entry<String, Integer> palabra : table.entrySet()){
-            System.out.println("Palabra: " + palabra.getKey() + 
-                    " - Repeticiones: " + palabra.getValue());
+            lstPalabras.getItems().add(palabra.getKey());
         }        
     }
     
@@ -91,9 +90,8 @@ public class FXMLController implements Initializable {
             while ((line = br.readLine()) != null) {
                 String[] str = line.split(" ");
                 for(int i = 0; i < str.length; i++){
+                    str[i] = checkPalabra(str[i]);
                     if(!str[i].equals(" ")&&!str[i].isEmpty()){
-                        // Agrega la clave a la tabla, si ya existe le suma 1.
-                        // El metodo merge esta definido en Map.
                         table.merge(str[i], 1, Integer::sum);
                     }
                 }
@@ -107,7 +105,7 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
         mostrarPalabras();
-    }
+    }  
 
     @FXML
     private void eventOnMouseclicked(MouseEvent event) {
