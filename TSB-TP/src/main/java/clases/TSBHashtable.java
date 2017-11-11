@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 /**
  * Clase que provee una tabla Hash con direccionamiento abierto.
@@ -269,7 +270,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         modCount++;
         return old;
     }
-
+    
     /**
      * Elimina de la tabla la clave key (y su correspondiente valor asociado).
      * El método no hace nada si la clave no está en la tabla.

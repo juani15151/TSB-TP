@@ -5,8 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,7 +37,7 @@ public class FXMLController implements Initializable {
     @FXML
     private TextField tfRepeticiones;
     
-    TSBHashtable<String, Integer> table = new TSBHashtable<>(3, 0.2f);
+    TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
     
     
     @Override
@@ -78,13 +77,12 @@ public class FXMLController implements Initializable {
         }
     }
     
-    private void cargarHash(){
-        for(int i = 0; i < lstPalabras.getItems().size(); i++){
-            String palabra = lstPalabras.getItems().get(i);
-            System.out.println("Palabra: " + palabra + " Repeticiones: " + BuscarPalabra(palabra));
-            table.put(palabra, BuscarPalabra(palabra));
-        }
-        System.out.println(table);
+    private void mostrarPalabras(){
+        // Para DEBUG solamente.
+        for(Map.Entry<String, Integer> palabra : table.entrySet()){
+            System.out.println("Palabra: " + palabra.getKey() + 
+                    " - Repeticiones: " + palabra.getValue());
+        }        
     }
     
     private void cargarLista(File file){
@@ -94,8 +92,10 @@ public class FXMLController implements Initializable {
             while ((line = br.readLine()) != null) {
                 String[] str = line.split(" ");
                 for(int i = 0; i < str.length; i++){
-                    if(!str[i].equals(" ")&&!str[i].isEmpty() && !lstPalabras.getItems().contains(str[i])){
-                        lstPalabras.getItems().add(str[i]);
+                    if(!str[i].equals(" ")&&!str[i].isEmpty()){
+                        // Agrega la clave a la tabla, si ya existe le suma 1.
+                        // El metodo merge esta definido en Map.
+                        table.merge(str[i], 1, Integer::sum);
                     }
                 }
             }
@@ -108,7 +108,7 @@ public class FXMLController implements Initializable {
 
             alert.showAndWait();
         }
-        cargarHash();
+        mostrarPalabras();
     }
 
     @FXML
