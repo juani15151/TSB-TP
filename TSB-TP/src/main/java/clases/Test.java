@@ -42,6 +42,6 @@ public class Test
         {
             Map.Entry<Integer, String> entry = it.next();
             System.out.println("Par: " + entry);
-        }
+        }        
     }
 }
