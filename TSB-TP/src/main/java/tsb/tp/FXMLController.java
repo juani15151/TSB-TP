@@ -36,11 +36,6 @@ public class FXMLController implements Initializable {
     private TextField tfRepeticiones;
     
     
-    private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
-    }
-    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -75,12 +70,21 @@ public class FXMLController implements Initializable {
             }
         }
         catch(Exception e){
-            e.printStackTrace();
+            System.out.println("nada que hacer");
         }
     }
 
     @FXML
     private void eventOnMouseclicked(MouseEvent event) {
-        tfBusqueda.setText(lstPalabras.getSelectionModel().getSelectedItem().toString());
+        try{
+            if (!lstPalabras.getSelectionModel().getSelectedItem().toString().isEmpty() && !lstPalabras.getItems().isEmpty()) {
+                tfBusqueda.setText(lstPalabras.getSelectionModel().getSelectedItem().toString());
+            }
+        } catch(Exception e){}
+    }
+
+    @FXML
+    private void BuscarPalabra(ActionEvent event) {
+        
     }
 }
