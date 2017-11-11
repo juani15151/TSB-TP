@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 
 /**
  * Clase que provee una tabla Hash con direccionamiento abierto.
@@ -255,11 +254,13 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         while (it.hasNext()) {
             i = it.next();
             if (table[i] == null) {
+                System.out.println("Entrada Añadida");
                 table[i] = new Entry(key, value);
                 break;
             }
-            if (table[i].key == key) {
+            else if (table[i].getKey().equals(key)) {
                 // Si esta ocupado retorna el objeto, si es tumba retorna null.
+                System.out.println("Entrada Existente");
                 old = table[i].setValue(value);
                 break;
             }
@@ -526,7 +527,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         for (Entry<K, V> entry : this.table) {
             if (entry != null
                     && entry.alive()
-                    && entry.getValue() == value) {
+                    && entry.getValue().equals(value)) {
 
                 return true;
             }
@@ -554,7 +555,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
             if (entry == null) {
                 return null;
             }
-            if(entry.getKey() == key){
+            if(entry.getKey().equals(key)){
                 // Si la entrada es tumba y tiene esta clave retorna null.
                 return entry.alive() ? entry : null;
             }
@@ -848,12 +849,12 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
          *
          * @returns el valor almacenado.
          */
-        public V setValue(V value) {
-            if (value == null) {
+        public V setValue(V newValue) {
+            if (newValue == null) {
                 throw new IllegalArgumentException("setValue(): parámetro null...");
             }
             V old = this.value;
-            this.value = value;
+            this.value = newValue;
             alive = true;
             return old;
         }
