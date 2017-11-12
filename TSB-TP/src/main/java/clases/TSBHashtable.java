@@ -801,7 +801,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * la tabla. Lanzará una IllegalArgumentException si alguno de los dos 
      * parámetros es null.
      */
-    private class Entry<K, V> implements Map.Entry<K, V> {
+    private class Entry<K, V> implements Map.Entry<K, V>, Serializable {
 
         private K key;
         private V value;
@@ -976,7 +976,7 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
      * eliminar un objeto (remove()), eliminar todo el contenido (clear) y la  
      * creación de un Iterator (que incluye el método Iterator.remove()).
      */
-    private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
+    private class EntrySet extends AbstractSet<Map.Entry<K, V>>{
 
         @Override
         public Iterator<Map.Entry<K, V>> iterator() {

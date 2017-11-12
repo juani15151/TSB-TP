@@ -37,14 +37,12 @@ public class FXMLController implements Initializable {
     @FXML
     private TextField tfRepeticiones;
     
-    TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
+    public static TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO      
-        
-    }    
+    }
 
     @FXML
     private void CargarArchivo(ActionEvent event) {
@@ -76,7 +74,7 @@ public class FXMLController implements Initializable {
         }
     }
     
-    private void mostrarPalabras(){
+    public void mostrarPalabras(){
         // Para DEBUG solamente.
         for(Map.Entry<String, Integer> palabra : table.entrySet()){
             lstPalabras.getItems().add(palabra.getKey());
