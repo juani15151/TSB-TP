@@ -1,8 +1,13 @@
 package tsb.tp;
 
+import clases.TSBHashtable;
 import java.beans.EventHandler;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -18,10 +23,9 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
-        
+        load();
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
-        
         stage.setTitle("Trabajo Practico TSB");
         stage.setScene(scene);
         stage.show();
@@ -38,6 +42,18 @@ public class MainApp extends Application {
         ObjectOutputStream ois = new ObjectOutputStream(out);
         ois.writeObject(o);
         ois.close();
+    }
+    public void load() throws FileNotFoundException, IOException, IOException, ClassNotFoundException{
+        String nameFile = "TSBHashtable.dat";
+        File arch = new File(nameFile);
+        if (arch.exists()) {
+            FileInputStream fis = new FileInputStream("TSBHashtable.dat");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            FXMLController.table = (TSBHashtable)ois.readObject();
+            System.out.println("");
+        } else {
+            throw new FileNotFoundException("No se encontró el archivo");
+        }
     }
 
     /**

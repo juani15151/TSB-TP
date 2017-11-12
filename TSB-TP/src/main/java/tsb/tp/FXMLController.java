@@ -42,9 +42,7 @@ public class FXMLController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        
-    }    
+    }
 
     @FXML
     private void CargarArchivo(ActionEvent event) {
@@ -76,7 +74,7 @@ public class FXMLController implements Initializable {
         }
     }
     
-    private void mostrarPalabras(){
+    public void mostrarPalabras(){
         // Para DEBUG solamente.
         for(Map.Entry<String, Integer> palabra : table.entrySet()){
             lstPalabras.getItems().add(palabra.getKey());
@@ -178,6 +176,10 @@ public class FXMLController implements Initializable {
         palabra = palabra.replace("7", "");
         palabra = palabra.replace("8", "");
         palabra = palabra.replace("9", "");
+        palabra = palabra.replace("»", "");
+        palabra = palabra.replace("«", "");
+        palabra = palabra.replace("$", "");
+        palabra = palabra.replace("%", "");
         return palabra;
     }
 }
