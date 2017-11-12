@@ -137,16 +137,17 @@ public class FXMLController implements Initializable {
     
     @FXML
     private void BuscarPalabra(ActionEvent event) {
-        System.out.println(table);
-        try{
-            tfRepeticiones.setText(table.get(tfBusqueda.getText()).toString());
-        }catch (Exception e) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error");
+        String palabra = tfBusqueda.getText();
+        Integer cantidad = table.get(palabra);
+        if(cantidad == null){
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Aviso");
             alert.setHeaderText("No se encontro esa palabra");
             alert.setContentText(null);
             alert.showAndWait();
-        }
+        } else {
+            tfRepeticiones.setText(cantidad.toString());
+        }       
     }
     public String checkPalabra(String palabra){
         palabra = palabra.replace(".", "");

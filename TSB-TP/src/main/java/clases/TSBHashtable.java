@@ -544,12 +544,14 @@ public class TSBHashtable<K, V> implements Map<K, V>, Cloneable, Serializable {
         if (key == null) {
             throw new NullPointerException("getEntry(): parámetro null");
         }
-
-        Iterator<Integer> index = getIndexIterator(h(key.hashCode()));
+        
+        int startIndex = h(key.hashCode());
+        Iterator<Integer> index = getIndexIterator(startIndex);
         Entry<K, V> entry;
 
         while (index.hasNext()) {
-            entry = table[index.next()];
+            int i = index.next();
+            entry = table[i];
             if (entry == null) {
                 return null;
             }
