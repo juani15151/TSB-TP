@@ -11,16 +11,16 @@
 
 <AnchorPane id="AnchorPane" maxHeight="540.0" maxWidth="600.0" minHeight="540.0" minWidth="600.0" prefHeight="540.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tsb.tp.FXMLController">
     <children>
-      <VBox layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+      <VBox layoutX="10.0" layoutY="10.0" minHeight="540.0" minWidth="600.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
             <HBox>
                <children>
-                  <TextField fx:id="tfArchivo" editable="false" HBox.hgrow="ALWAYS">
+                  <TextField fx:id="tfArchivo" editable="false" minWidth="420.0" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="btCargarArchivo" mnemonicParsing="false" onAction="#cargarArchivo" prefHeight="25.0" prefWidth="150.0" text="Cargar Archivo...">
+                  <Button fx:id="btCargarArchivo" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#cargarArchivo" prefHeight="25.0" prefWidth="150.0" text="Cargar Archivo...">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -48,7 +48,7 @@
                                     <Text layoutY="17.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cantidad total de palabras:" AnchorPane.rightAnchor="10.0" />
                                  </children>
                               </AnchorPane>
-                              <TextField fx:id="tfTotal" editable="false" prefHeight="25.0" prefWidth="62.0" />
+                              <TextField fx:id="tfTotal" editable="false" minWidth="60.0" prefHeight="25.0" prefWidth="62.0" />
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />
@@ -65,12 +65,12 @@
                         </Text>
                         <HBox>
                            <children>
-                              <TextField fx:id="tfBusqueda" prefHeight="26.0" prefWidth="170.0" HBox.hgrow="ALWAYS">
+                              <TextField fx:id="tfBusqueda" minWidth="170.0" prefHeight="26.0" prefWidth="170.0" HBox.hgrow="ALWAYS">
                                  <HBox.margin>
                                     <Insets right="10.0" />
                                  </HBox.margin>
                               </TextField>
-                              <Button fx:id="btBuscar" mnemonicParsing="false" onAction="#BuscarPalabra" text="Buscar" />
+                              <Button fx:id="btBuscar" minWidth="63.0" mnemonicParsing="false" onAction="#BuscarPalabra" text="Buscar" />
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />
@@ -86,15 +86,15 @@
                                     <Text layoutY="17.0" lineSpacing="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cantidad de repeticiones: " wrappingWidth="171.513671875" />
                                  </children>
                               </AnchorPane>
-                              <TextField fx:id="tfRepeticiones" editable="false" prefHeight="25.0" prefWidth="62.0" />
+                              <TextField fx:id="tfRepeticiones" editable="false" minWidth="51.0" prefHeight="26.0" prefWidth="51.0" />
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />
                            </VBox.margin>
                         </HBox>
-                        <Button fx:id="btClear" mnemonicParsing="false" onAction="#Reiniciar" text="Borrar datos guardados">
+                        <Button fx:id="btClear" minWidth="173.0" mnemonicParsing="false" onAction="#Reiniciar" text="Borrar datos guardados">
                            <VBox.margin>
-                              <Insets bottom="5.0" right="5.0" top="348.0" />
+                              <Insets bottom="5.0" left="130.0" right="5.0" top="348.0" />
                            </VBox.margin>
                         </Button>
                      </children>
