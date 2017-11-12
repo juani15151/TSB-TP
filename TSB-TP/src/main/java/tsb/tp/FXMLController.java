@@ -131,7 +131,7 @@ public class FXMLController implements Initializable {
     
     
     @FXML
-    private void BuscarPalabra(ActionEvent event) {
+    private void buscarPalabra(ActionEvent event) {
         buscarPalabra(tfBusqueda.getText());            
     }
     
@@ -151,12 +151,12 @@ public class FXMLController implements Initializable {
     
     
     public String checkPalabra(String palabra){        
-        palabra = palabra.replaceAll("([.,\\-():;¿?_*!¡<>\\[\\]#@«»]|[0-9])+", "");
+        palabra = palabra.replaceAll("([.,\\-():;¿?_*!¡<>\\[\\]#@«»$%]|[0-9])+", "");
         return palabra;
     }
 
     @FXML
-    private void Reiniciar(ActionEvent event) {
+    private void reiniciar(ActionEvent event) {
         table.clear();
         lstPalabras.getItems().clear();
         File file = new File("TSBHashtable.dat");
