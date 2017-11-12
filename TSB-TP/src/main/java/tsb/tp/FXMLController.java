@@ -145,7 +145,7 @@ public class FXMLController implements Initializable {
     
     
     public String checkPalabra(String palabra){        
-        palabra = palabra.replaceAll("([.,\\-():;¿?_*!¡<>\\[\\]#@]|[0-9])+", "");
+        palabra = palabra.replaceAll("([.,\\-():;¿?_*!¡<>\\[\\]#@«»]|[0-9])+", "");
         return palabra;
     }
 
