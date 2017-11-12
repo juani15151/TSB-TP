@@ -42,6 +42,7 @@ public class FXMLController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        mostrarPalabras();
     }
 
     @FXML
@@ -75,7 +76,7 @@ public class FXMLController implements Initializable {
     }
     
     public void mostrarPalabras(){
-        // Para DEBUG solamente.
+        lstPalabras.getItems().clear();
         for(Map.Entry<String, Integer> palabra : table.entrySet()){
             lstPalabras.getItems().add(palabra.getKey());
         }        
@@ -119,18 +120,7 @@ public class FXMLController implements Initializable {
 
             alert.showAndWait();
         }
-    }
-    
-    
-    /**
-     * Busca la cantidad de repeticiones de la palabra en el archivo ya leido.
-     * 
-     * @param palabra
-     * @return cantidad de repeticiones.
-     */
-    private int BuscarPalabra(String palabra) {
-        return table.get(palabra);        
-    }
+    }    
     
     
     @FXML
