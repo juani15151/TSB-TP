@@ -37,7 +37,7 @@ public class FXMLController implements Initializable {
     @FXML
     private TextField tfRepeticiones;
     
-    TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
+    public static TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
     
     
     @Override

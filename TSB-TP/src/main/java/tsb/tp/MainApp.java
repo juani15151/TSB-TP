@@ -1,11 +1,16 @@
 package tsb.tp;
 
+import java.beans.EventHandler;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 
 public class MainApp extends Application {
@@ -17,9 +22,22 @@ public class MainApp extends Application {
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
         
-        stage.setTitle("JavaFX and Maven");
+        stage.setTitle("Trabajo Practico TSB");
         stage.setScene(scene);
         stage.show();
+     
+    }
+
+    @Override
+    public void stop() throws Exception {
+        this.write(FXMLController.table);
+        super.stop();
+    }
+    public void write(Object o) throws IOException {
+        FileOutputStream out = new FileOutputStream("TSBHashtable.dat");
+        ObjectOutputStream ois = new ObjectOutputStream(out);
+        ois.writeObject(o);
+        ois.close();
     }
 
     /**
