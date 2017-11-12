@@ -64,6 +64,7 @@ public class FXMLController implements Initializable {
         // Obtenemos el archivo seleccionado del FileChooser
         try{
             File archivo = fileChooser.showOpenDialog(null);
+            if (archivo == null) return;
             // Le seteamos el path al TextField de cargar archivo.
             tfArchivo.textProperty().set(archivo.getPath());
             // Cargamos la lista
@@ -116,6 +117,7 @@ public class FXMLController implements Initializable {
         try{
             if (!lstPalabras.getSelectionModel().getSelectedItem().isEmpty() && !lstPalabras.getItems().isEmpty()) {
                 tfBusqueda.setText(lstPalabras.getSelectionModel().getSelectedItem().toString());
+                buscarPalabra(tfBusqueda.getText());                
             }
         } catch (Exception e) {
             Alert alert = new Alert(AlertType.ERROR);
@@ -130,17 +132,21 @@ public class FXMLController implements Initializable {
     
     @FXML
     private void BuscarPalabra(ActionEvent event) {
-        String palabra = tfBusqueda.getText();
+        buscarPalabra(tfBusqueda.getText());            
+    }
+    
+    private void buscarPalabra(String palabra){
         Integer cantidad = table.get(palabra);
         if(cantidad == null){
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Aviso");
-            alert.setHeaderText("No se encontro esa palabra");
+            alert.setHeaderText("Ningun archivo contiene la palabra '" + palabra + "'.");
             alert.setContentText(null);
             alert.showAndWait();
+            tfRepeticiones.setText("0");
         } else {
             tfRepeticiones.setText(cantidad.toString());
-        }       
+        }   
     }
     
     
