@@ -38,6 +38,10 @@ public class FXMLController implements Initializable {
     private TextField tfRepeticiones;
     
     public static TSBHashtable<String, Integer> table = new TSBHashtable<>(1000);
+    @FXML
+    private TextField tfTotal;
+    @FXML
+    private Button btClear;
     
     
     @Override
@@ -80,6 +84,7 @@ public class FXMLController implements Initializable {
         for(Map.Entry<String, Integer> palabra : table.entrySet()){
             lstPalabras.getItems().add(palabra.getKey());
         }        
+        tfTotal.setText(""+table.size());
     }
     
     private void cargarLista(File file){
@@ -142,5 +147,13 @@ public class FXMLController implements Initializable {
     public String checkPalabra(String palabra){        
         palabra = palabra.replaceAll("([.,\\-():;¿?_*!¡<>\\[\\]#@]|[0-9])+", "");
         return palabra;
+    }
+
+    @FXML
+    private void Reiniciar(ActionEvent event) {
+        table.clear();
+        lstPalabras.getItems().clear();
+        File file = new File("TSBHashtable.dat");
+        file.delete();
     }
 }
