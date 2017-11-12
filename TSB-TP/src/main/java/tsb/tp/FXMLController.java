@@ -50,7 +50,7 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    private void CargarArchivo(ActionEvent event) {
+    private void cargarArchivo(ActionEvent event) {
         // Creamos los filtros para el FileChooser
         ExtensionFilter txtFilter = new ExtensionFilter("Text files (.txt)","*.txt");
         ExtensionFilter allFilter = new ExtensionFilter("All files (*)","*");
