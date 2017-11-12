@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    private static final String FILENAME = "TSBHashtable.dat";
+    public static final String FILENAME = "TSBHashtable.dat";
 
     @Override
     public void start(Stage stage) throws Exception {
