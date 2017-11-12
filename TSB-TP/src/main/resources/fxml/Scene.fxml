@@ -70,7 +70,7 @@
                                     <Insets right="10.0" />
                                  </HBox.margin>
                               </TextField>
-                              <Button fx:id="btBuscar" minWidth="63.0" mnemonicParsing="false" onAction="#BuscarPalabra" text="Buscar" />
+                              <Button fx:id="btBuscar" minWidth="63.0" mnemonicParsing="false" onAction="#buscarPalabra" text="Buscar" />
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />
@@ -92,9 +92,9 @@
                               <Insets top="5.0" />
                            </VBox.margin>
                         </HBox>
-                        <Button fx:id="btClear" minWidth="173.0" mnemonicParsing="false" onAction="#Reiniciar" text="Borrar datos guardados">
+                        <Button fx:id="btClear" minWidth="173.0" mnemonicParsing="false" onAction="#reiniciar" text="Borrar datos guardados">
                            <VBox.margin>
-                              <Insets bottom="5.0" left="130.0" right="5.0" top="348.0" />
+                              <Insets bottom="5.0" right="5.0" top="348.0" />
                            </VBox.margin>
                         </Button>
                      </children>
