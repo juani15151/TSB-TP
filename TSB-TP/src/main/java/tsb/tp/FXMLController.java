@@ -149,36 +149,10 @@ public class FXMLController implements Initializable {
             tfRepeticiones.setText(cantidad.toString());
         }       
     }
-    public String checkPalabra(String palabra){
-        palabra = palabra.replace(".", "");
-        palabra = palabra.replace(",", "");
-        palabra = palabra.replace("-", "");
-        palabra = palabra.replace("(", "");
-        palabra = palabra.replace(")", "");
-        palabra = palabra.replace(":", "");
-        palabra = palabra.replace(";", "");
-        palabra = palabra.replace("¿", "");
-        palabra = palabra.replace("?", "");
-        palabra = palabra.replace("_", "");
-        palabra = palabra.replace("*", "");
-        palabra = palabra.replace("¡", "");
-        palabra = palabra.replace("!", "");
-        palabra = palabra.replace("<", "");
-        palabra = palabra.replace(">", "");
-        palabra = palabra.replace("[", "");
-        palabra = palabra.replace("]", "");
-        palabra = palabra.replace("#", "");
-        palabra = palabra.replace("@", "");
-        palabra = palabra.replace("0", "");
-        palabra = palabra.replace("1", "");
-        palabra = palabra.replace("2", "");
-        palabra = palabra.replace("3", "");
-        palabra = palabra.replace("4", "");
-        palabra = palabra.replace("5", "");
-        palabra = palabra.replace("6", "");
-        palabra = palabra.replace("7", "");
-        palabra = palabra.replace("8", "");
-        palabra = palabra.replace("9", "");
+    
+    
+    public String checkPalabra(String palabra){        
+        palabra = palabra.replaceAll("([.,\\-():;¿?_*!¡<>\\[\\]#@]|[0-9])+", "");
         return palabra;
     }
 }
