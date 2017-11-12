@@ -1,7 +1,6 @@
 package tsb.tp;
 
 import clases.TSBHashtable;
-import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,10 +14,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-
 
 public class MainApp extends Application {
+
+    private static final String FILENAME = "TSBHashtable.dat";
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -29,7 +28,7 @@ public class MainApp extends Application {
         stage.setTitle("Trabajo Practico TSB");
         stage.setScene(scene);
         stage.show();
-     
+
     }
 
     @Override
@@ -37,22 +36,21 @@ public class MainApp extends Application {
         this.write(FXMLController.table);
         super.stop();
     }
+
     public void write(Object o) throws IOException {
-        FileOutputStream out = new FileOutputStream("TSBHashtable.dat");
+        FileOutputStream out = new FileOutputStream(FILENAME);
         ObjectOutputStream ois = new ObjectOutputStream(out);
         ois.writeObject(o);
         ois.close();
     }
-    public void load() throws FileNotFoundException, IOException, IOException, ClassNotFoundException{
-        String nameFile = "TSBHashtable.dat";
-        File arch = new File(nameFile);
+
+    public void load() throws FileNotFoundException, IOException, IOException, ClassNotFoundException {
+        File arch = new File(FILENAME);
         if (arch.exists()) {
-            FileInputStream fis = new FileInputStream("TSBHashtable.dat");
+            FileInputStream fis = new FileInputStream(FILENAME);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            FXMLController.table = (TSBHashtable)ois.readObject();
+            FXMLController.table = (TSBHashtable) ois.readObject();
             System.out.println("");
-        } else {
-            throw new FileNotFoundException("No se encontró el archivo");
         }
     }
 
