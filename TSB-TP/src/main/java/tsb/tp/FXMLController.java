@@ -159,7 +159,7 @@ public class FXMLController implements Initializable {
     private void reiniciar(ActionEvent event) {
         table.clear();
         lstPalabras.getItems().clear();
-        File file = new File("TSBHashtable.dat");
+        File file = new File(MainApp.FILENAME);
         file.delete();
     }
 }
